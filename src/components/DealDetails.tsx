@@ -3,25 +3,36 @@ import { Deals } from "../models";
 
 import { StyleSheet, Text, Image, View, TouchableOpacity } from "react-native";
 import { priceDisplay } from "../util";
+import ajax from "../ajax";
 interface DealItemProps {
-  deal: Deals;
-  onPress: (id: string) => void;
+  initialDealData: Deals;
+  onBack: () => void;
 }
-interface DealItemState {}
+interface DealItemState {
+  deal: Deals;
+}
 
-class DealItem extends Component<DealItemProps, DealItemState> {
+class DealDetails extends Component<DealItemProps, DealItemState> {
   constructor(props: DealItemProps) {
     super(props);
 
-    this.handlePress = this.handlePress.bind(this);
+    this.state = {
+      deal: this.props.initialDealData,
+    };
   }
-  handlePress() {
-    this.props.onPress(this.props.deal.key);
+  async componentDidMount() {
+    const data = await ajax.fetchDealDetail(this.state.deal.key);
+    this.setState({
+      deal: data,
+    });
   }
   render(): ReactNode {
-    const deal = this.props.deal;
+    const deal = this.state.deal;
     return (
-      <TouchableOpacity style={styles.deal} onPress={this.handlePress}>
+      <View style={styles.deal}>
+        <TouchableOpacity onPress={this.props.onBack}>
+          <Text>Back</Text>
+        </TouchableOpacity>
         <Image
           style={styles.image}
           source={{
@@ -35,7 +46,21 @@ class DealItem extends Component<DealItemProps, DealItemState> {
             <Text style={styles.price}>{deal.cause.name}</Text>
           </View>
         </View>
-      </TouchableOpacity>
+        {deal.user && (
+          <View>
+            <Image
+              style={styles.avatar}
+              source={{
+                uri: deal.user.avatar,
+              }}
+            />
+            <Text>{deal.user.name}</Text>
+          </View>
+        )}
+        <View>
+          <Text>{deal.description}</Text>
+        </View>
+      </View>
     );
   }
 }
@@ -44,6 +69,8 @@ const styles = StyleSheet.create({
   deal: {
     marginHorizontal: 12,
     marginTop: 12,
+    borderColor: "#bbb",
+    borderWidth: 1,
   },
   image: {
     width: "100%",
@@ -61,9 +88,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 5,
+    padding: 10,
   },
   footer: {
     flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    marginTop: 15,
   },
   cause: {
     flex: 2,
@@ -72,6 +103,10 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: "right",
   },
+  avatar: {
+    width: "30%",
+    height: 50,
+  },
 });
 
-export default DealItem;
+export default DealDetails;

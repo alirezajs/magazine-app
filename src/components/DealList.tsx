@@ -7,6 +7,7 @@ import DealItem from "./DealItem";
 interface DealListState {}
 interface DealListProp {
   deals: Deals[];
+  onItemPress: (id:string) => void;
 }
 
 class DealList extends Component<DealListProp, DealListState> {
@@ -18,7 +19,9 @@ class DealList extends Component<DealListProp, DealListState> {
       <View style={styles.list}>
         <FlatList
           data={this.props.deals}
-          renderItem={({ item }) => <DealItem deal={item} />}
+          renderItem={({ item }) => (
+            <DealItem deal={item} onPress={this.props.onItemPress} />
+          )}
         ></FlatList>
       </View>
     );
@@ -33,4 +36,3 @@ const styles = StyleSheet.create({
 });
 
 export default DealList;
-

@@ -5,10 +5,12 @@ import { View, Text, StyleSheet } from "react-native";
 import ajax from "../ajax";
 
 import { Deals } from "../models";
+import DealDetails from "./DealDetails";
 import DealList from "./DealList";
 
 interface MagazineState {
   deals: Deals[];
+  currentDetailId: string | null;
 }
 interface MagazineProp {}
 
@@ -17,7 +19,11 @@ export default class Magazine extends Component<MagazineProp, MagazineState> {
     super(props);
     this.state = {
       deals: [],
+      currentDetailId: null,
     };
+
+    this.setCurrentDeal = this.setCurrentDeal.bind(this);
+    this.unSetCurrentDeal=this.unSetCurrentDeal.bind(this)
   }
   async componentDidMount() {
     const deals = await ajax.fetchAllDeal();
@@ -25,17 +31,44 @@ export default class Magazine extends Component<MagazineProp, MagazineState> {
       deals,
     });
   }
+  setCurrentDeal(dealId: string) {
+    this.setState({
+      currentDetailId: dealId,
+    });
+  }
+
+  unSetCurrentDeal() {
+    this.setState({
+      currentDetailId: null,
+    });
+  }
+
+  currentDeal = () => {
+    return this.state.deals.find(
+      (item) => item.key === this.state.currentDetailId
+    );
+  };
+
   render(): React.ReactNode {
     const deals = this.state.deals;
-    return (
-      <View style={styles.container}>
-        {deals && deals.length > 0 ? (
-          <DealList deals={this.state.deals} />
-        ) : (
+    if (this.state.currentDetailId) {
+      return (
+        <DealDetails
+          initialDealData={this.currentDeal()}
+          onBack={this.unSetCurrentDeal}
+        />
+      );
+    } else if (deals.length > 0) {
+      return (
+        <DealList deals={this.state.deals} onItemPress={this.setCurrentDeal} />
+      );
+    } else {
+      return (
+        <View style={styles.container}>
           <Text style={styles.header}>BackSale</Text>
-        )}
-      </View>
-    );
+        </View>
+      );
+    }
   }
 }
 
