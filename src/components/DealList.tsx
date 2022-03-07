@@ -31,7 +31,7 @@ class DealList extends Component<DealListProp, DealListState> {
 const styles = StyleSheet.create({
   list: {
     backgroundColor: "#eee",
-    flex: 1,
+    width:"100%"
   },
 });
 

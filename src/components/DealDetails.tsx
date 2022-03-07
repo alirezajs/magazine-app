@@ -68,7 +68,6 @@ class DealDetails extends Component<DealItemProps, DealItemState> {
 const styles = StyleSheet.create({
   deal: {
     marginHorizontal: 12,
-    marginTop: 12,
     borderColor: "#bbb",
     borderWidth: 1,
   },

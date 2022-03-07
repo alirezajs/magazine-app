@@ -7,10 +7,12 @@ import ajax from "../ajax";
 import { Deals } from "../models";
 import DealDetails from "./DealDetails";
 import DealList from "./DealList";
+import SearchBar from "./SearchBar";
 
 interface MagazineState {
   deals: Deals[];
   currentDetailId: string | null;
+  dealsSearch: Deals[];
 }
 interface MagazineProp {}
 
@@ -20,10 +22,12 @@ export default class Magazine extends Component<MagazineProp, MagazineState> {
     this.state = {
       deals: [],
       currentDetailId: null,
+      dealsSearch: [],
     };
 
     this.setCurrentDeal = this.setCurrentDeal.bind(this);
-    this.unSetCurrentDeal=this.unSetCurrentDeal.bind(this)
+    this.unSetCurrentDeal = this.unSetCurrentDeal.bind(this);
+    this.searchDeals = this.searchDeals.bind(this);
   }
   async componentDidMount() {
     const deals = await ajax.fetchAllDeal();
@@ -49,26 +53,46 @@ export default class Magazine extends Component<MagazineProp, MagazineState> {
     );
   };
 
+  searchDeals = async (searchTerm: string) => {
+    let dealsSearch: Deals[] = [];
+    if (searchTerm) {
+      dealsSearch = await ajax.fetchDealsSearchResult(searchTerm);
+    }
+    this.setState({
+      dealsSearch,
+    });
+  };
+
   render(): React.ReactNode {
     const deals = this.state.deals;
     if (this.state.currentDetailId) {
       return (
-        <DealDetails
-          initialDealData={this.currentDeal()}
-          onBack={this.unSetCurrentDeal}
-        />
-      );
-    } else if (deals.length > 0) {
-      return (
-        <DealList deals={this.state.deals} onItemPress={this.setCurrentDeal} />
-      );
-    } else {
-      return (
-        <View style={styles.container}>
-          <Text style={styles.header}>BackSale</Text>
+        <View style={styles.main}>
+          <DealDetails
+            initialDealData={this.currentDeal()}
+            onBack={this.unSetCurrentDeal}
+          />
         </View>
       );
     }
+    const dealsToDisplay =
+      this.state.dealsSearch.length > 0
+        ? this.state.dealsSearch
+        : this.state.deals;
+
+    if (dealsToDisplay.length > 0) {
+      return (
+        <View style={styles.main}>
+          <SearchBar dealsSearch={this.searchDeals} />
+          <DealList deals={dealsToDisplay} onItemPress={this.setCurrentDeal} />
+        </View>
+      );
+    }
+    return (
+      <View style={styles.container}>
+        <Text style={styles.header}>BackSale</Text>
+      </View>
+    );
   }
 }
 
@@ -81,5 +105,8 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 40,
+  },
+  main: {
+    marginTop: 30,
   },
 });
