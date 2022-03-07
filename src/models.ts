@@ -5,7 +5,7 @@ export interface Cause {
 export interface Deals {
   cause: Cause;
   key: string;
-  media: [];
+  media: string[];
   price: number;
   title: string;
 }

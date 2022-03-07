@@ -1,7 +1,8 @@
 import { Component, ReactNode } from "react";
 import { Deals } from "../models";
 
-import { StyleSheet, FlatList, View, Text } from "react-native";
+import { StyleSheet, FlatList, View } from "react-native";
+import DealItem from "./DealItem";
 
 interface DealListState {}
 interface DealListProp {
@@ -17,7 +18,7 @@ class DealList extends Component<DealListProp, DealListState> {
       <View style={styles.list}>
         <FlatList
           data={this.props.deals}
-          renderItem={({ item }) => <Text>{item.title}</Text>}
+          renderItem={({ item }) => <DealItem deal={item} />}
         ></FlatList>
       </View>
     );
@@ -32,3 +33,4 @@ const styles = StyleSheet.create({
 });
 
 export default DealList;
+
