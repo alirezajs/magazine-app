@@ -15,17 +15,19 @@ class DealItem extends Component<DealItemProps, DealItemState> {
   render(): ReactNode {
     const deal = this.props.deal;
     return (
-      <View>
+      <View style={styles.deal}>
         <Image
           style={styles.image}
           source={{
             uri: deal.media[0],
           }}
         />
-        <View>
-          <Text>{deal.title}</Text>
-          <Text>{deal.cause.name}</Text>
-          <Text>{priceDisplay(deal.price)}</Text>
+        <View style={styles.info}>
+          <Text style={styles.title}>{deal.title}</Text>
+          <View>
+            <Text style={styles.cause}>{priceDisplay(deal.price)}</Text>
+            <Text style={styles.price}>{deal.cause.name}</Text>
+          </View>
         </View>
       </View>
     );
@@ -33,9 +35,36 @@ class DealItem extends Component<DealItemProps, DealItemState> {
 }
 
 const styles = StyleSheet.create({
+  deal: {
+    marginHorizontal: 12,
+    marginTop: 12,
+  },
   image: {
     width: "100%",
     height: 150,
+    backgroundColor: "#ccc",
+  },
+  info: {
+    padding: 10,
+    backgroundColor: "#fff",
+    borderColor: "rgb(187 184 184)",
+    borderWidth: 1,
+    borderTopWidth: 0,
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  footer: {
+    flexDirection: "row",
+  },
+  cause: {
+    flex: 2,
+  },
+  price: {
+    flex: 1,
+    textAlign: "right",
   },
 });
 
