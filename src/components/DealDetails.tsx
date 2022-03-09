@@ -1,7 +1,17 @@
 import { Component, ReactNode } from "react";
 import { Deals } from "../models";
 
-import { StyleSheet, Text, Image, View, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  Image,
+  View,
+  TouchableOpacity,
+  PanResponder,
+  Animated,
+  Dimensions,
+} from "react-native";
+
 import { priceDisplay } from "../util";
 import ajax from "../ajax";
 interface DealItemProps {
@@ -10,6 +20,7 @@ interface DealItemProps {
 }
 interface DealItemState {
   deal: Deals;
+  imageIndex: number;
 }
 
 class DealDetails extends Component<DealItemProps, DealItemState> {
@@ -18,8 +29,58 @@ class DealDetails extends Component<DealItemProps, DealItemState> {
 
     this.state = {
       deal: this.props.initialDealData,
+      imageIndex: 0,
     };
   }
+  width: number = 0;
+  imageXPos = new Animated.Value(0);
+
+  imagePanResponser = PanResponder.create({
+    onStartShouldSetPanResponder: (evt, gestureState) => true,
+    onPanResponderMove: (evt, gestureState) => {
+      this.imageXPos.setValue(gestureState.dx);
+    },
+    onPanResponderRelease: (evt, gestureState) => {
+      this.width = Dimensions.get("window").width;
+      if (Math.abs(gestureState.dx) > this.width * 0.4) {
+        const direction = Math.sign(gestureState.dx);
+        Animated.timing(this.imageXPos, {
+          toValue: direction * this.width,
+          duration: 250,
+          useNativeDriver: true,
+        }).start(() => this.handleSwipe(-1 * direction));
+      }
+      else{
+        Animated.spring(this.imageXPos, {
+          toValue: 0,
+          useNativeDriver: true,
+        }).start();
+      }
+    },
+  });
+  handleSwipe(indexDirection: number) {
+    if (!this.state.deal.media[this.state.imageIndex + indexDirection]) {
+      Animated.spring(this.imageXPos, {
+        toValue: 0,
+        useNativeDriver: true,
+      }).start();
+      return;
+    }
+
+    this.setState(
+      (prevSate) => ({
+        imageIndex: indexDirection + prevSate.imageIndex,
+      }),
+      () => {
+        this.imageXPos.setValue(indexDirection * this.width);
+        Animated.spring(this.imageXPos, {
+          toValue: 0,
+          useNativeDriver: true,
+        }).start();
+      }
+    );
+  }
+
   async componentDidMount() {
     const data = await ajax.fetchDealDetail(this.state.deal.key);
     this.setState({
@@ -33,10 +94,11 @@ class DealDetails extends Component<DealItemProps, DealItemState> {
         <TouchableOpacity onPress={this.props.onBack} style={styles.backButton}>
           <Text>Back</Text>
         </TouchableOpacity>
-        <Image
-          style={styles.image}
+        <Animated.Image
+          {...this.imagePanResponser.panHandlers}
+          style={[{ left: this.imageXPos }, styles.image]}
           source={{
-            uri: deal.media[0],
+            uri: deal.media[this.state.imageIndex],
           }}
         />
         <View style={styles.info}>
