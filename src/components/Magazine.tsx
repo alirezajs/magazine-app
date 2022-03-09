@@ -13,6 +13,7 @@ interface MagazineState {
   deals: Deals[];
   currentDetailId: string | null;
   dealsSearch: Deals[];
+  activeSearchText: string;
 }
 interface MagazineProp {}
 
@@ -23,6 +24,7 @@ export default class Magazine extends Component<MagazineProp, MagazineState> {
       deals: [],
       currentDetailId: null,
       dealsSearch: [],
+      activeSearchText: "",
     };
 
     this.setCurrentDeal = this.setCurrentDeal.bind(this);
@@ -60,6 +62,7 @@ export default class Magazine extends Component<MagazineProp, MagazineState> {
     }
     this.setState({
       dealsSearch,
+      activeSearchText: searchTerm,
     });
   };
 
@@ -83,7 +86,10 @@ export default class Magazine extends Component<MagazineProp, MagazineState> {
     if (dealsToDisplay.length > 0) {
       return (
         <View style={styles.main}>
-          <SearchBar dealsSearch={this.searchDeals} />
+          <SearchBar
+            dealsSearch={this.searchDeals}
+            initialSearchTerm={this.state.activeSearchText}
+          />
           <DealList deals={dealsToDisplay} onItemPress={this.setCurrentDeal} />
         </View>
       );

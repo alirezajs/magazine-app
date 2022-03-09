@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
   },
   info: {
     padding: 10,
-    backgroundColor: "rgb(255,113,0)",
+    backgroundColor: "#fff",
     color: "#fff",
   },
   title: {

@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   info: {
     padding: 10,
     backgroundColor: "#fff",
-    borderColor: "rgb(187 184 184)",
+    borderColor: "#ddd",
     borderWidth: 1,
     borderTopWidth: 0,
   },
