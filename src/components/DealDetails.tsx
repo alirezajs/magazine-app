@@ -10,6 +10,7 @@ import {
   PanResponder,
   Animated,
   Dimensions,
+  ScrollView,
 } from "react-native";
 
 import { priceDisplay } from "../util";
@@ -49,8 +50,7 @@ class DealDetails extends Component<DealItemProps, DealItemState> {
           duration: 250,
           useNativeDriver: true,
         }).start(() => this.handleSwipe(-1 * direction));
-      }
-      else{
+      } else {
         Animated.spring(this.imageXPos, {
           toValue: 0,
           useNativeDriver: true,
@@ -94,37 +94,42 @@ class DealDetails extends Component<DealItemProps, DealItemState> {
         <TouchableOpacity onPress={this.props.onBack} style={styles.backButton}>
           <Text>Back</Text>
         </TouchableOpacity>
-        <Animated.Image
-          {...this.imagePanResponser.panHandlers}
-          style={[{ left: this.imageXPos }, styles.image]}
-          source={{
-            uri: deal.media[this.state.imageIndex],
-          }}
-        />
-        <View style={styles.info}>
-          <Text style={styles.title}>{deal.title}</Text>
-        </View>
-        <View style={styles.footer}>
-          <View>
-            <Text style={styles.cause}>{priceDisplay(deal.price)}</Text>
-            <Text style={styles.price}>{deal.cause.name}</Text>
+        <View>
+          <Animated.Image
+            {...this.imagePanResponser.panHandlers}
+            style={[{ left: this.imageXPos }, styles.image]}
+            source={{
+              uri: deal.media[this.state.imageIndex],
+            }}
+          />
+          <View style={styles.info}>
+            <Text style={styles.title}>{deal.title}</Text>
           </View>
+        </View>
 
-          {deal.user && (
+        <ScrollView>
+          <View style={styles.footer}>
             <View>
-              <Image
-                style={styles.avatar}
-                source={{
-                  uri: deal.user.avatar,
-                }}
-              />
-              <Text>{deal.user.name}</Text>
+              <Text style={styles.cause}>{priceDisplay(deal.price)}</Text>
+              <Text style={styles.price}>{deal.cause.name}</Text>
             </View>
-          )}
-        </View>
-        <View style={styles.description}>
-          <Text>{deal.description}</Text>
-        </View>
+
+            {deal.user && (
+              <View>
+                <Image
+                  style={styles.avatar}
+                  source={{
+                    uri: deal.user.avatar,
+                  }}
+                />
+                <Text>{deal.user.name}</Text>
+              </View>
+            )}
+          </View>
+          <View style={styles.description}>
+            <Text>{deal.description}</Text>
+          </View>
+        </ScrollView>
       </View>
     );
   }
@@ -146,8 +151,8 @@ const styles = StyleSheet.create({
   },
   info: {
     padding: 10,
-    backgroundColor: "#fff",
-    color: "#fff",
+    backgroundColor: "#ddd",
+    color: "#000",
   },
   title: {
     fontSize: 16,
